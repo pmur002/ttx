@@ -1,0 +1,15 @@
+
+import("xml2")
+
+export("ttxListTables",
+       "ttxGetTable",
+
+       "ttxFontFamily",
+       "ttxFontWeight",
+       "ttxFontStyle",
+       
+       "ttxGlyphNames",
+       "ttxGlyphIndex",
+       "ttxGlyphWidth",
+       "ttxGlyphHeight",
+       "ttxGlyphBounds")

@@ -1,0 +1,69 @@
+
+R version 4.4.1 (2024-06-14) -- "Race for Your Life"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> 
+> library(ttx)
+      ttx:  4.5.0
+fontforge:  20190801
+> 
+> font <- system.file("fonts", "Montserrat", "static", "Montserrat-Medium.ttf",
++                     package="grDevices")
+> 
+> suppressMessages(ttxListTables(font))
+ [1] "GDEF" "GPOS" "GSUB" "OS/2" "STAT" "cmap" "gasp" "glyf" "head" "hhea"
+[11] "hmtx" "loca" "maxp" "name" "post" "prep"
+> 
+> suppressMessages(ttxGetTable("head", font))
+{xml_document}
+<ttFont sfntVersion="\x00\x01\x00\x00" ttLibVersion="4.5">
+[1] <head>\n  <!-- Most of this table will be recalculated by the compiler -- ...
+> 
+> suppressMessages(ttxFontFamily(font))
+[1] "Montserrat Medium"
+> suppressMessages(ttxFontWeight(font))
+[1] 500
+> suppressMessages(ttxFontStyle(font))
+[1] "normal"
+>        
+> suppressMessages(head(ttxGlyphNames(font)))
+[1] ".notdef" "A"       "Aacute"  "Abreve"  "uni1EAE" "uni1EB6"
+> suppressMessages(ttxGlyphIndex("A", font))
+A 
+1 
+> suppressMessages(ttxGlyphWidth(1, font))
+width   lsb 
+  732    -1 
+attr(,"unitsPerEm")
+[1] 1000
+> suppressMessages(ttxGlyphHeight(1, font)) ## NOTE heights for vertical writing
+height    tsb 
+     0      0 
+attr(,"unitsPerEm")
+[1] 1000
+> suppressMessages(ttxGlyphBounds(1, font))
+xmin xmax ymin ymax 
+  -1  733    0  700 
+attr(,"unitsPerEm")
+[1] 1000
+> 
+> 
+> 
+> 
+> 
+> proc.time()
+   user  system elapsed 
+  1.593   0.150   1.737 

@@ -19,7 +19,7 @@ ttxFontStyle(fontfile)
 \value{
   \code{ttxFontFamily()} and \code{ttxFontStyle()} return a character value.
   
-  \code{ttxGetTable()} returns an XML document.
+  \code{ttxFontWeight()} returns a numeric value.
 }
 \author{
   Paul Murrell

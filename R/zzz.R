@@ -15,7 +15,7 @@
     if (fontForgeAvailable()) {
         packageStartupMessage(paste0("fontforge:  ", fontForgeVersion()))
     } else {
-        packageStartupMessage(paste("         : fontforge not found",
-                                    "(no support for OTF fonts with no glyf table)"))
+        packageStartupMessage(paste("         :  fontforge not found",
+                                    "(no support for OTF fonts that lack glyf table)"))
     }
 }

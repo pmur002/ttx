@@ -16,11 +16,11 @@ jobs:
         with:
           r-version: ${{ matrix.r-version }}
           tools: base
-      - name: Install system deps
+      - name: Install macOS system deps
         if: runner.os == 'macOS'
         run: |
-            brew install fonttools
-            brew install fontforge
+          brew install fonttools
+          brew install fontforge
       - uses: s-u/R-actions/pkg-check@v2
         with:
           debian-deps: 

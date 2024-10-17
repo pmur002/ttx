@@ -19,12 +19,12 @@ jobs:
       - uses: s-u/R-actions/pkg-check@v2
         with:
           debian-deps: 
-            - fonttools
-            - fontforge
+            fonttools
+            fontforge
           macos-deps: 
-            - fonttools
-            - fontforge
+            fonttools
+            fontforge
           windows-deps:
-            - fonttools
-            - fontforge
+            fonttools
+            fontforge
           check-flags: --as-cran

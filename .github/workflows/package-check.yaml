@@ -25,8 +25,9 @@ jobs:
         if: runner.os == 'Windows'
         shell: bash
         run: |
-          choco install fontforge
           pip install fonttools
+          choco install fontforge
+          echo 'C:\Program Files (x86)\FontForgeBuilds\' >> $GITHUB_PATH
       - uses: s-u/R-actions/pkg-check@v2
         with:
           debian-deps: 

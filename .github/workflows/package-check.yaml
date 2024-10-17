@@ -26,6 +26,7 @@ jobs:
         shell: bash
         run: |
           choco install fontforge
+          pip install fonttools
       - uses: s-u/R-actions/pkg-check@v2
         with:
           debian-deps: 

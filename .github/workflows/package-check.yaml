@@ -21,6 +21,11 @@ jobs:
         run: |
           brew install fonttools
           brew install fontforge
+      - name: Install Windows system deps
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          choco install fontforge
       - uses: s-u/R-actions/pkg-check@v2
         with:
           debian-deps: 

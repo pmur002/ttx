@@ -5,7 +5,7 @@
     options(ttx.quiet=TRUE)
 }
 
-.onAttach <- function(libname, package) {
+.onAttach <- function(libname, pkgname) {
     if (ttxAvailable()) {
         packageStartupMessage(paste0("      ttx:  ", ttxVersion()))
     } else {
@@ -15,7 +15,7 @@
     if (fontForgeAvailable()) {
         packageStartupMessage(paste0("fontforge:  ", fontForgeVersion()))
     } else {
-        packageStartupMessage(paste("        : fontforge not found",
+        packageStartupMessage(paste("         : fontforge not found",
                                     "(no support for OTF fonts with no glyf table)"))
     }
 }

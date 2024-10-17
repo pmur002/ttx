@@ -1,15 +1,11 @@
 
 initFontForge <- function() {
     fontforge <- Sys.which("fontforge")
-    if (nchar(fontforge) == 0) {
-        warning(paste("fontforge not found;",
-                      "no support for OTF fonts with no glyf table"))
-    } else {
+    if (nchar(fontforge) > 0) {
         versText <- system("fontforge --version", intern=TRUE,
                            ignore.stderr=TRUE)
         versLine <- grep("fontforge", versText)
         version <- gsub(".+ ", "", versText[versLine])
-        packageStartupMessage(paste0("fontforge:  ", version))
         set("ffVersion", version)
     }
 }

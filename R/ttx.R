@@ -1,11 +1,8 @@
 
 initTTX <- function() {
     ttx <- Sys.which("ttx")
-    if (nchar(ttx) == 0) {
-        stop("ttx not found; this package will not work until ttx in installed")
-    } else {
+    if (nchar(ttx) > 0) {
         version <- system("ttx --version", intern=TRUE)
-        packageStartupMessage(paste0("      ttx:  ", version))
         set("ttxVersion", version)
     }
 }

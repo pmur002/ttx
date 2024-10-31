@@ -9,13 +9,15 @@
     if (ttxAvailable()) {
         packageStartupMessage(paste0("      ttx:  ", ttxVersion()))
     } else {
-        packageStartupMessage(paste("         :  ttx not found",
-                                    "(this package will not work until ttx is installed)"))
+        packageStartupMessage("      ttx:  not found")
+        packageStartupMessage(paste("         : ",
+                                    "This package will not work until ttx is installed"))
     }
     if (fontForgeAvailable()) {
         packageStartupMessage(paste0("fontforge:  ", fontForgeVersion()))
     } else {
-        packageStartupMessage(paste("         :  fontforge not found",
-                                    "(no support for OTF fonts that lack glyf table)"))
+        packageStartupMessage("fontforge:  not found")
+        packageStartupMessage(paste("         : ",
+                                    "No support for OTF fonts that lack glyf table"))
     }
 }

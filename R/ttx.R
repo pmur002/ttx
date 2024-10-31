@@ -163,12 +163,19 @@ getRDS <- function(rdsFile) {
 ## or a temporary one will be created per R session.
 ttxFontDir <- function() {
     fontDir <- getOption("ttx.cacheDir")
-    if (is.null(fontDir) || !dir.exists(fontDir)) {
+    if (is.null(fontDir)) {
+        ## Use temporary dir (just for this R session)
         fontDir <- file.path(tempdir(), "TTXfonts")
         if (!dir.exists(fontDir)) {
             dir.create(fontDir)
         }
-    } 
+    } else {
+        ## If user has specified a directory, user has to have
+        ## created that directory
+        if (!dir.exists(fontDir)) {
+            stop(paset0("Font cache directory ", fontDir, " does not exist."))
+        }
+    }
     fontDir
 }
 
@@ -188,7 +195,7 @@ ttxFontFile <- function(fontpath) {
 }
 
 ################################################################################
-## Get a single table
+## List all tables
 tableList <- function(fontfile) {
     listing <- ttx(paste0("-l ", fontfile), intern=TRUE) 
     gsub(" .+", "",
@@ -196,6 +203,7 @@ tableList <- function(fontfile) {
               listing[-c(1:3, length(listing))]))
 }
 
+## Get a single table
 getTable <- function(table, fontfile, suffix, replace=table) {
     ttxfile <- gsub(paste0("[.]", suffix, "$"),
                     paste0("-", replace, ".ttx"), fontfile)

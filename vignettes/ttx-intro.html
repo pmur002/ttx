@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Paul Murrell" />
+
+
+<title>The {ttx} Package</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">The {ttx} Package</h1>
+<h4 class="author">Paul Murrell</h4>
+
+
+
+<p><em>The {ttx} package is a front end to the <a href="https://fonttools.readthedocs.io/en/latest/ttx.html"><code>ttx</code>
+utility</a>. It provides functions for extracting font tables from
+TrueType and OpenType fonts, plus functions for extracting some specific
+font and glyph metric information from the font tables.</em></p>
+<div id="font-tables" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Font tables</h1>
+<p>A font is essentially a collection of <em>glyphs</em> or shapes, some
+of which correspond to letters, but some of which correspond to symbols
+such as punctuation or accents, etc. A font file contains lots of
+information about glyphs, including: a description of the outline of
+each glyph; the <em>metrics</em> for each glyph (width, height, descent,
+etc); and the correspondence between glyphs and character sets, like
+UNICODE.</p>
+<p>All of this information is stored in a set of tables. For example,
+TrueType and OpenType fonts have an <a href="https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6hmtx.html"><code>hmtx</code>
+table</a> that contains metric information for the horizontal
+typesetting of glyphs. TrueType and OpenType fonts also have a <a href="https://learn.microsoft.com/en-us/typography/opentype/spec/cmap"><code>cmap</code>
+table</a> that contains mappings between character codes and glyphs.</p>
+</div>
+<div id="extracting-font-tables" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Extracting font
+tables</h1>
+<p>The main function of the <code>ttx</code> utility, which is part of
+the Python fontTools library <span class="citation">(Rossum, Esfahbod,
+and contributors 2024)</span>, is to convert binary font files into an
+XML format. It can also convert back again.</p>
+<p>The {ttx} package uses <code>ttx</code> to extract font tables into
+XML files and then reads the resulting XML into R, using the {xml2}
+package <span class="citation">(Wickham, Hester, and Ooms 2024)</span>.
+For example, the following code calls the <code>ttxGetTable()</code>
+function to extract the “name” table from a Montserrat font file. This
+contains human-readable names for information about the font.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(ttx)</span></code></pre></div>
+<pre><code>      ttx:  4.5.0</code></pre>
+<pre><code>fontforge:  20190801</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>fontFile <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;fonts&quot;</span>, <span class="st">&quot;Montserrat&quot;</span>, <span class="st">&quot;static&quot;</span>, </span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>                        <span class="st">&quot;Montserrat-Medium.ttf&quot;</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>                        <span class="at">package=</span><span class="st">&quot;grDevices&quot;</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>nameTable <span class="ot">&lt;-</span> <span class="fu">ttxGetTable</span>(<span class="st">&quot;name&quot;</span>, fontFile)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>nameTable</span></code></pre></div>
+<pre><code>{xml_document}
+&lt;ttFont sfntVersion=&quot;\x00\x01\x00\x00&quot; ttLibVersion=&quot;4.5&quot;&gt;
+[1] &lt;name&gt;\n  &lt;namerecord nameID=&quot;0&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x4 ...</code></pre>
+</div>
+<div id="extracting-information-from-tables" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Extracting information
+from tables</h1>
+<p>The result returned by <code>ttxGetTable()</code> is an
+<code>&quot;xml_document&quot;</code>. The following code shows the entire XML
+structure of this table.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">as.character</span>(nameTable), <span class="at">sep=</span><span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;ttFont sfntVersion=&quot;\x00\x01\x00\x00&quot; ttLibVersion=&quot;4.5&quot;&gt;
+  &lt;name&gt;
+    &lt;namerecord nameID=&quot;0&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      Copyright 2011 The Montserrat Project Authors (https://github.com/JulietaUla/Montserrat)
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;1&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      Montserrat Medium
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;2&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      Regular
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;3&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      8.000;ULA;Montserrat-Medium
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;4&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      Montserrat Medium
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;5&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      Version 8.000
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;6&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      Montserrat-Medium
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;8&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      Julieta Ulanovsky
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;9&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      Julieta Ulanovsky
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;11&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      http://www.zkysky.com.ar/
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;12&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      http://www.zkysky.com.ar/
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;13&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: http://scripts.sil.org/OFL
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;14&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      http://scripts.sil.org/OFL
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;16&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      Montserrat
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;17&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      Medium
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;25&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      MontserratRoman
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;256&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      Weight
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;261&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      Medium
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;275&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      Italic
+    &lt;/namerecord&gt;
+    &lt;namerecord nameID=&quot;276&quot; platformID=&quot;3&quot; platEncID=&quot;1&quot; langID=&quot;0x409&quot;&gt;
+      Roman
+    &lt;/namerecord&gt;
+  &lt;/name&gt;
+&lt;/ttFont&gt;</code></pre>
+<p>We can extract information from an <code>&quot;xml_document&quot;</code> using
+functions from the {xml2} package. For example, the following code
+extracts the text content from the <code>nameRecord</code> element with
+a <code>nameID</code> attribute value of <code>1</code>. This
+corresponds to the font family name.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">library</span>(xml2)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>familyElement <span class="ot">&lt;-</span> <span class="fu">xml_find_first</span>(nameTable, <span class="st">&quot;//namerecord[@nameID = &#39;1&#39;]&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">xml_text</span>(familyElement)</span></code></pre></div>
+<pre><code>[1] &quot;\n      Montserrat Medium\n    &quot;</code></pre>
+</div>
+<div id="extracting-font-information" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Extracting font
+information</h1>
+<p>The {ttx} package provides some convenience functions for extracting
+common font information. For example, the following code extracts the
+font family, font weight, and font style for the Montserrat font.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>family <span class="ot">&lt;-</span> <span class="fu">ttxFontFamily</span>(fontFile)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>family</span></code></pre></div>
+<pre><code>[1] &quot;Montserrat Medium&quot;</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>weight <span class="ot">&lt;-</span> <span class="fu">ttxFontWeight</span>(fontFile)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>weight</span></code></pre></div>
+<pre><code>[1] 500</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>style <span class="ot">&lt;-</span> <span class="fu">ttxFontStyle</span>(fontFile)</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>style</span></code></pre></div>
+<pre><code>[1] &quot;normal&quot;</code></pre>
+</div>
+<div id="extracting-glyph-information" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Extracting glyph
+information</h1>
+<p>The {ttx} package also provides some convenience functions for
+extracting information about individual glyphs. For example, the
+following code extracts the width and left-side bearing for glyph 1654
+(a florin character) from the Montserrat font, plus a bounding box for
+the same glyph.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>glyph <span class="ot">&lt;-</span> <span class="dv">1654</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>width <span class="ot">&lt;-</span> <span class="fu">ttxGlyphWidth</span>(glyph, fontFile)</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>width</span></code></pre></div>
+<pre><code>width   lsb 
+  449   -92 
+attr(,&quot;unitsPerEm&quot;)
+[1] 1000</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>bbox <span class="ot">&lt;-</span> <span class="fu">ttxGlyphBounds</span>(glyph, fontFile)</span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>bbox</span></code></pre></div>
+<pre><code>xmin xmax ymin ymax 
+ -92  484 -200  748 
+attr(,&quot;unitsPerEm&quot;)
+[1] 1000</code></pre>
+<p>The following code uses that information to draw a diagram of the
+glyph metrics. The grey horizontal line represents the baseline on which
+we are laying out text. The left dot is the origin at which the florin
+glyph is drawn and the right dot shows the origin where the next glyph
+would be drawn in a horizontal layout of text. The dashed bounding box
+shows that the rendered glyph actually extends backwards past its origin
+and also forwards past the origin of the next glyph.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="fu">library</span>(grid)</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="fu">grid.newpage</span>()</span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>size <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>left <span class="ot">&lt;-</span> <span class="fu">unit</span>(.<span class="dv">25</span>, <span class="st">&quot;npc&quot;</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a>baseline <span class="ot">&lt;-</span> <span class="fu">unit</span>(.<span class="dv">25</span>, <span class="st">&quot;npc&quot;</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a>convert <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a>    size<span class="sc">*</span>x<span class="sc">/</span><span class="dv">1000</span></span>
+<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a>}</span>
+<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">convert</span>(width)</span>
+<span id="cb22-9"><a href="#cb22-9" tabindex="-1"></a>bb <span class="ot">&lt;-</span> <span class="fu">convert</span>(bbox)</span>
+<span id="cb22-10"><a href="#cb22-10" tabindex="-1"></a><span class="fu">grid.segments</span>(left <span class="sc">-</span> <span class="fu">unit</span>(size<span class="sc">/</span><span class="dv">2</span>, <span class="st">&quot;pt&quot;</span>), baseline,</span>
+<span id="cb22-11"><a href="#cb22-11" tabindex="-1"></a>              left <span class="sc">+</span> <span class="fu">unit</span>(size, <span class="st">&quot;pt&quot;</span>), baseline,</span>
+<span id="cb22-12"><a href="#cb22-12" tabindex="-1"></a>              <span class="at">gp=</span><span class="fu">gpar</span>(<span class="at">col=</span><span class="st">&quot;grey&quot;</span>))</span>
+<span id="cb22-13"><a href="#cb22-13" tabindex="-1"></a><span class="fu">grid.circle</span>(<span class="at">x=</span><span class="fu">unit.c</span>(left, left <span class="sc">+</span> <span class="fu">unit</span>(w[<span class="st">&quot;width&quot;</span>], <span class="st">&quot;pt&quot;</span>)),</span>
+<span id="cb22-14"><a href="#cb22-14" tabindex="-1"></a>            <span class="at">y=</span>baseline, <span class="at">r=</span><span class="fu">unit</span>(.<span class="dv">5</span>, <span class="st">&quot;mm&quot;</span>), </span>
+<span id="cb22-15"><a href="#cb22-15" tabindex="-1"></a>            <span class="at">gp=</span><span class="fu">gpar</span>(<span class="at">col=</span><span class="st">&quot;black&quot;</span>, <span class="at">fill=</span><span class="st">&quot;black&quot;</span>))</span>
+<span id="cb22-16"><a href="#cb22-16" tabindex="-1"></a>font <span class="ot">&lt;-</span> <span class="fu">glyphFont</span>(fontFile, <span class="dv">0</span>, family, weight, style)</span>
+<span id="cb22-17"><a href="#cb22-17" tabindex="-1"></a>info <span class="ot">&lt;-</span> <span class="fu">glyphInfo</span>(<span class="at">id=</span>glyph, <span class="at">x=</span><span class="dv">0</span>, <span class="at">y=</span><span class="dv">0</span>, </span>
+<span id="cb22-18"><a href="#cb22-18" tabindex="-1"></a>                  <span class="at">font=</span><span class="dv">1</span>, <span class="at">size=</span>size, <span class="at">fontList=</span><span class="fu">glyphFontList</span>(font),</span>
+<span id="cb22-19"><a href="#cb22-19" tabindex="-1"></a>                  <span class="at">width=</span>size, <span class="at">height=</span>size)</span>
+<span id="cb22-20"><a href="#cb22-20" tabindex="-1"></a><span class="fu">grid.glyph</span>(info, left, baseline, <span class="at">hjust=</span><span class="dv">0</span>, <span class="at">vjust=</span><span class="dv">0</span>, <span class="at">gp=</span><span class="fu">gpar</span>(<span class="at">col=</span><span class="st">&quot;grey&quot;</span>))</span>
+<span id="cb22-21"><a href="#cb22-21" tabindex="-1"></a><span class="fu">grid.segments</span>(left, baseline,</span>
+<span id="cb22-22"><a href="#cb22-22" tabindex="-1"></a>              left <span class="sc">+</span> <span class="fu">unit</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">0</span>, w[<span class="st">&quot;width&quot;</span>]), <span class="at">each=</span><span class="dv">2</span>), <span class="st">&quot;pt&quot;</span>),</span>
+<span id="cb22-23"><a href="#cb22-23" tabindex="-1"></a>              baseline)</span>
+<span id="cb22-24"><a href="#cb22-24" tabindex="-1"></a><span class="fu">grid.rect</span>(left <span class="sc">+</span> <span class="fu">unit</span>(bb[<span class="st">&quot;xmin&quot;</span>], <span class="st">&quot;pt&quot;</span>),</span>
+<span id="cb22-25"><a href="#cb22-25" tabindex="-1"></a>          baseline <span class="sc">+</span> <span class="fu">unit</span>(bb[<span class="st">&quot;ymin&quot;</span>], <span class="st">&quot;pt&quot;</span>),</span>
+<span id="cb22-26"><a href="#cb22-26" tabindex="-1"></a>          <span class="fu">unit</span>(bb[<span class="st">&quot;xmax&quot;</span>] <span class="sc">-</span> bb[<span class="st">&quot;xmin&quot;</span>], <span class="st">&quot;pt&quot;</span>),</span>
+<span id="cb22-27"><a href="#cb22-27" tabindex="-1"></a>          <span class="fu">unit</span>(bb[<span class="st">&quot;ymax&quot;</span>] <span class="sc">-</span> bb[<span class="st">&quot;ymin&quot;</span>], <span class="st">&quot;pt&quot;</span>),</span>
+<span id="cb22-28"><a href="#cb22-28" tabindex="-1"></a>          <span class="at">just=</span><span class="fu">c</span>(<span class="st">&quot;left&quot;</span>, <span class="st">&quot;bottom&quot;</span>),</span>
+<span id="cb22-29"><a href="#cb22-29" tabindex="-1"></a>          <span class="at">gp=</span><span class="fu">gpar</span>(<span class="at">fill=</span><span class="cn">NA</span>, <span class="at">lty=</span><span class="st">&quot;dotted&quot;</span>))</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAMAAACahl6sAAAB4FBMVEUAAAABAQECAgIEBAQFBQUGBgYHBwcICAgLCwsMDAwNDQ0VFRUZGRkbGxsfHx8gICAhISEiIiIrKyssLCwtLS03Nzc5OTk6Ojo7Ozs8PDw9PT1CQkJERERFRUVGRkZHR0dISEhJSUlNTU1OTk5PT09SUlJVVVVYWFhZWVleXl5fX19kZGRoaGhqampra2tsbGxvb29wcHBxcXFycnJzc3N2dnZ3d3d4eHh7e3t9fX2AgICBgYGCgoKEhISFhYWHh4eIiIiJiYmLi4uMjIyOjo6SkpKTk5OWlpaYmJiZmZmenp6ioqKjo6OlpaWmpqaoqKiqqqqrq6usrKyurq6vr6+wsLCxsbGysrKzs7O1tbW2tra7u7u8vLy9vb2+vr6/v7/AwMDBwcHCwsLDw8PExMTFxcXGxsbHx8fIyMjJycnKysrLy8vMzMzNzc3Ozs7Pz8/Q0NDR0dHS0tLT09PU1NTV1dXW1tbX19fY2NjZ2dna2trb29vc3Nzd3d3e3t7f39/g4ODh4eHi4uLj4+Pk5OTl5eXm5ubn5+fo6Ojp6enq6urr6+vs7Ozt7e3u7u7v7+/w8PDx8fHy8vLz8/P09PT19fX29vb39/f4+Pj5+fn6+vr7+/v8/Pz9/f3+/v7///+fNza7AAAACXBIWXMAAB7CAAAewgFu0HU+AAAHAklEQVR4nO2d6UMbRRjGp1pvwfvGAxSlVVsVxbYerbeABxq1Hu0CIUALBCqUckMDAj2ABgo0JST5V93c8ybZnXmT2cxbnefLQnZ2dn5kZ57sk9mBJf4jYroboEoGhJoMCDUZEGoyINRkQKjJgFCTAaEmA0JNBoSaDAg1GRBqMiDUZECoyYBQkwGhJgNCTQaEmgwINRkQajIg1GRAqOl/CLJwrOX4ir3d/6KlxUq+8GdLy1fxsnbsRRVTJCRBpr+LJRLvMsZO2L/02tvHk6/W2D+MJwQ7PlycGm2zt48NjU4tPZzeEX3kCU0gL7K/yvnDTxw9fOgny7LOvNXU9KW9tU41HT6xk0isMbavB+QZ9gu+5rURq6QuhPWBPMdOY+vdDJbGSGqsVtel5TsUxtUam+l05rCswK1ymuouT4bfyIAbhmUNenBOL0Bu9rpzWGsenNQDkO0eAceQ+nNKgsQ2ETVGAgIOa+2942W21kVSIG/eMyZdYWxIxDG0wQ7Eym6wk5T7yIyIw1q/Iwxxs3jcPT85v7QSmh3LdJ1gYufg/fHyW+wgKZB3HpiUrW+wgKI3tJfbtzXRZb+ykUh0nyujpQLJjVrSV8I1iNG5ADtD5KI1jGuftBQPv9AJ/TeKCiwjPyNISy1IGHB0FXN4J7UglwDIilMxbX2kvUHuQ0XcD/zCqZi+UetZ9ptUZRvgDXHsDfR9ZA7Yh2Mxfc5ezyypyoZ5kJBzOW2ftZZOy13T3TzITkXtQkvlqBXhOboVViwjlSCgr3vl4E5SCbLMg0y5FNQb0IkFBq1F53KaAzqxxnmQa87lyPsIiLJuOpcjH9CB8MSlG+i7tOQCuhh/c9jjVlJbZ5fTLv+GeJHBuUohCLCRi+rqlVOFIEMDeVlAAyXk5dtUWUB320KpL3MYvYBuEwcSTB9FMKC7igPJdByChngZBzKbPopgQDeJA1nKHEYvoLuAA7murt1Fqmz4PYcD2VLU6FKqDKQLB7InrrFsVQQSEbedV1f2OHIBXVjceF79mcPoBXT725zAN4cD2yW0mzmMoI/w6uNB5t1K0g7o4uCrKsf8OiXSAd0t0B02Km4YVsruR24AkF3xAYqlDGSV5+hU3wdEUgYyz4P0upclHdCBL6uCrkVpB3TgK4Vx16K0fQTYyJxrUdIBHcZGSAd00EbW3QtTDuh024gyEGAjVvVtRBnIAsJGPJGqGXQT8jZCMaDLC8xWdrcRigFdXggbIW2I0EaW3QsTDOhyQtkIwYAuJ2gjVZ70kJKi4Ve7jagCATYSUFMnTopAUDZCL6DLC2MjBAO6vPoRNkLZR+IgzRbYCOWADqbZIhshHNDBNFuHjSgata5otxFFIOBLUS02oggE2Ij4ySO6AR2wEeE0FMIBHbCRWVF1hH0E2Mg/ouroBnRIG6Eb0GFthGxAR8BG1IAQsBE1IGBujScPsIqlJKADc2skZjOSDejA3BqhjRAO6HA2QtcQ4RRN8XNlZAM69N0I1YAO2oj6q0ZKKoZfYCOuk+I9lAoQCjaiBARrI2QDOqSN0A3okDZC1kewNkI2oIMz/bcl6iMa0MGZ/ppsRMWoFaJgIypApniQqj9blRUW5Gx9TU39WfDS3zyI++f94cZHH3qhg0BAF3+bpXSE7zPyNnLqrtTRr2pbKCwX0P3AMvqR2wueYnezkb4D2cO98JGohJ5mP6d/eD7bkKemc7r0Pa/BaWc15jhYROa0QvFuxCwJPck+Tf/wIFOjWpmzitUVRoJ8/NLvakF+9QAE9V6WurT8/JXV4XJl5S+tWiUXVsGlhepRpTq7vI3kOvtJ1EnlhAOJH0m35Cj3GsJGPksPv6958YgSNqA7U2SIYKaW4G4kmDZEkgHdPuh+qzLV0QzoYBYk9YAezRurWZ6jW+oWlmZAB74+HJE7KcWADq5EdVlVs/Cq9H4ELi+pZfJGWhWCwCmAzktqea/KQDbhw7pL4iNS0hvQRcciha+H4fqr3ZI3fpoDugWrZxWcP75YsNynaOZcVnp9JJpc8a83lOvOe8t9EMPyy96J6w3ost8dBEYn5xZmxkssFi2aAZiXzoBuX7SsctWXOCuQ7KglXG8jUDQUVFeSIMI3pLOa65aWkiRISMRxFXNSfQFdu1/AcQVzTp0z6D535fDjHl/X6SOfuHEMI//DgM4ZdB0O/7rCVmAZ+3lD7wy69dLL6/QvlvHH1dbZV9pafbFEZDH4UfMHvmTzv2lubrU3fYGvv/UlP21EO1rbUgsznm9tDeaPcNmhB6SBMeazt+32tmFidKTnbsbunbt+G+x4w95uHWTsvr2CI0ru0APie7nu9WTQE2qse+UPext/v67uWGU79IDcCTIg1GRAqMmAUJMBoSYDQk0GhJoMCDUZEGoyINRkQKjpX4kpnK2CYJzvAAAAAElFTkSuQmCC" /><!-- --></p>
+</div>
+<div id="caching-font-tables" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Caching font
+tables</h1>
+<p>The extraction of font tables into XML files, the reading of those
+XML files into R as <code>&quot;xml_document&quot;</code>s, and the accessing of
+elements and attributes of an <code>&quot;xml_document&quot;</code> using {xml2}
+are all expensive operations.</p>
+<p>In order to limit this expense, the {ttx} package maintains a cache
+of XML files and automatically converts the <code>&quot;xml_document&quot;</code>s
+into data frames, which are also cached as RDS files. This means that,
+within a single R session, each table from each font should only be
+extracted (and converted to a data frame) at most once.</p>
+<p>If the <code>&quot;ttx.cacheDir&quot;</code> option is set (and the
+corresponding directory exists), the {ttx} package will use that to
+directory to cache XML files and RDS files so that expensive extractions
+will not be repeated in new R sessions.</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-fonttools" class="csl-entry">
+Rossum, Just van, Behdad Esfahbod, and contributors. 2024.
+<span>“FontTools: A Library for Manipulating Fonts.”</span> <a href="https://github.com/fonttools/fonttools">https://github.com/fonttools/fonttools</a>.
+</div>
+<div id="ref-pkg-xml2" class="csl-entry">
+Wickham, Hadley, Jim Hester, and Jeroen Ooms. 2024. <em>Xml2: Parse
+XML</em>. <a href="https://CRAN.R-project.org/package=xml2">https://CRAN.R-project.org/package=xml2</a>.
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

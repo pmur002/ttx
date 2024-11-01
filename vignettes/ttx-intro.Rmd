@@ -1,0 +1,196 @@
+---
+title: "The {ttx} Package"
+author: "Paul Murrell"
+output: 
+  rmarkdown::html_vignette:
+    number_sections: true
+bibliography: ttx-intro.bib
+vignette: >
+  %\VignetteIndexEntry{The {ttx} Package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(
+  comment = ''
+)
+```
+
+*The {ttx} package is a front end to the 
+[`ttx` utility](https://fonttools.readthedocs.io/en/latest/ttx.html).
+It provides functions for extracting font tables from TrueType
+and OpenType fonts, plus functions for extracting some specific font and glyph
+metric information from the font tables.*
+
+# Font tables
+
+A font is essentially a collection of *glyphs* or shapes, some of which
+correspond to letters, but some of which correspond to 
+symbols such as punctuation or
+accents, etc.
+A font file contains lots of information about glyphs, including:
+a description of the outline of each glyph;
+the *metrics* for each glyph (width, height, descent, etc);
+and the correspondence between glyphs and character sets, like UNICODE.
+
+All of this information is stored in a set of tables.
+For example, TrueType and OpenType fonts have an 
+[`hmtx` table](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6hmtx.html) that contains metric information for the horizontal
+typesetting of glyphs.
+TrueType and OpenType fonts also have a 
+[`cmap` table](https://learn.microsoft.com/en-us/typography/opentype/spec/cmap)
+that contains mappings between character codes and glyphs.
+
+# Extracting font tables
+
+The main function of the 
+`ttx` utility, which is part of the Python fontTools library
+[@fonttools], is to convert binary font files into an XML format.
+It can also convert back again.
+
+The {ttx} package uses `ttx` to extract font tables into XML files
+and then reads the resulting XML into R, using the
+{xml2} package [@pkg-xml2].
+For example, the following code calls the `ttxGetTable()` function
+to extract the "name" table from a Montserrat font file.  This
+contains human-readable names for information about the font.
+
+```{r}
+library(ttx)
+```
+
+```{r}
+fontFile <- system.file("fonts", "Montserrat", "static", 
+                        "Montserrat-Medium.ttf",
+                        package="grDevices")
+nameTable <- ttxGetTable("name", fontFile)
+nameTable
+```
+
+# Extracting information from tables
+
+The result returned by `ttxGetTable()` 
+is an `"xml_document"`.  The following code shows the entire XML structure
+of this table.
+
+```{r}
+cat(as.character(nameTable), sep="\n")
+```
+
+We can extract information from an `"xml_document"` using functions
+from the {xml2} package.
+For example, 
+the following code extracts the text content from
+the `nameRecord` element with a `nameID` 
+attribute value of `1`.
+This corresponds to the font family name.
+
+```{r}
+library(xml2)
+```
+
+```{r}
+familyElement <- xml_find_first(nameTable, "//namerecord[@nameID = '1']")
+xml_text(familyElement)
+```
+
+# Extracting font information
+
+The {ttx} package provides some convenience functions for extracting
+common font information.
+For example, the following code extracts the font family, font weight,
+and font style for the Montserrat font.
+
+```{r}
+family <- ttxFontFamily(fontFile)
+family
+weight <- ttxFontWeight(fontFile)
+weight
+style <- ttxFontStyle(fontFile)
+style
+```
+
+# Extracting glyph information
+
+The {ttx} package also provides some convenience functions
+for extracting information about individual glyphs.
+For example, the following code extracts the width and left-side bearing
+for glyph 1654 (a florin character) from the Montserrat font,
+plus a bounding box for the same glyph.
+
+```{r}
+glyph <- 1654
+width <- ttxGlyphWidth(glyph, fontFile)
+width
+bbox <- ttxGlyphBounds(glyph, fontFile)
+bbox
+```
+
+The following code uses that information to draw a diagram
+of the glyph metrics.  The grey horizontal line represents the
+baseline on which we are laying out text.
+The left dot is the origin at which
+the florin 
+glyph is drawn and the right dot shows the origin where the next glyph
+would be drawn in a horizontal layout of text.
+The dashed bounding box shows that the rendered glyph actually 
+extends backwards past its origin and also forwards past the origin
+of the next glyph.
+
+```{r}
+library(grid)
+```
+
+```{r fig.width=1, fig.height=1, dpi=200}
+grid.newpage()
+size <- 50
+left <- unit(.25, "npc")
+baseline <- unit(.25, "npc")
+convert <- function(x) {
+    size*x/1000
+}
+w <- convert(width)
+bb <- convert(bbox)
+grid.segments(left - unit(size/2, "pt"), baseline,
+              left + unit(size, "pt"), baseline,
+              gp=gpar(col="grey"))
+grid.circle(x=unit.c(left, left + unit(w["width"], "pt")),
+            y=baseline, r=unit(.5, "mm"), 
+            gp=gpar(col="black", fill="black"))
+font <- glyphFont(fontFile, 0, family, weight, style)
+info <- glyphInfo(id=glyph, x=0, y=0, 
+                  font=1, size=size, fontList=glyphFontList(font),
+                  width=size, height=size)
+grid.glyph(info, left, baseline, hjust=0, vjust=0, gp=gpar(col="grey"))
+grid.segments(left, baseline,
+              left + unit(rep(c(0, w["width"]), each=2), "pt"),
+              baseline)
+grid.rect(left + unit(bb["xmin"], "pt"),
+          baseline + unit(bb["ymin"], "pt"),
+          unit(bb["xmax"] - bb["xmin"], "pt"),
+          unit(bb["ymax"] - bb["ymin"], "pt"),
+          just=c("left", "bottom"),
+          gp=gpar(fill=NA, lty="dotted"))
+```
+
+# Caching font tables
+
+The extraction of font tables into XML files, the reading of those
+XML files into R as `"xml_document"`s, and the accessing of elements and 
+attributes of an `"xml_document"` using {xml2} are all expensive
+operations.  
+
+In order to limit this expense, 
+the {ttx} package maintains a cache of XML files and automatically converts 
+the `"xml_document"`s into data frames, which are also cached as RDS files.
+This means that, within a single R session, each table from each font
+should only be extracted (and converted to a data frame) at most once.
+
+If the `"ttx.cacheDir"` option is set (and the corresponding
+directory exists), the {ttx} package will 
+use that to directory to cache XML files and RDS files
+so that expensive extractions will not be repeated 
+in new R sessions.
+
+# References

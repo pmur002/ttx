@@ -23,38 +23,38 @@ fontforge:  20190801
 > font <- system.file("fonts", "Montserrat", "static", "Montserrat-Medium.ttf",
 +                     package="grDevices")
 > 
-> suppressMessages(ttxListTables(font))
+> ttxListTables(font)
  [1] "GDEF" "GPOS" "GSUB" "OS/2" "STAT" "cmap" "gasp" "glyf" "head" "hhea"
 [11] "hmtx" "loca" "maxp" "name" "post" "prep"
 > 
-> suppressMessages(ttxGetTable("head", font))
+> ttxGetTable("head", font)
 {xml_document}
 <ttFont sfntVersion="\x00\x01\x00\x00" ttLibVersion="4.5">
 [1] <head>\n  <!-- Most of this table will be recalculated by the compiler -- ...
 > 
-> suppressMessages(ttxFontFamily(font))
+> ttxFontFamily(font)
 [1] "Montserrat Medium"
-> suppressMessages(ttxFontWeight(font))
+> ttxFontWeight(font)
 [1] 500
-> suppressMessages(ttxFontStyle(font))
+> ttxFontStyle(font)
 [1] "normal"
 >        
-> suppressMessages(head(ttxGlyphNames(font)))
+> head(ttxGlyphNames(font))
 [1] ".notdef" "A"       "Aacute"  "Abreve"  "uni1EAE" "uni1EB6"
-> suppressMessages(ttxGlyphIndex("A", font))
+> ttxGlyphIndex("A", font)
 A 
 1 
-> suppressMessages(ttxGlyphWidth(1, font))
+> ttxGlyphWidth(1, font)
 width   lsb 
   732    -1 
 attr(,"unitsPerEm")
 [1] 1000
-> suppressMessages(ttxGlyphHeight(1, font)) ## NOTE heights for vertical writing
+> ttxGlyphHeight(1, font) ## NOTE heights for vertical writing
 height    tsb 
      0      0 
 attr(,"unitsPerEm")
 [1] 1000
-> suppressMessages(ttxGlyphBounds(1, font))
+> ttxGlyphBounds(1, font)
 xmin xmax ymin ymax 
   -1  733    0  700 
 attr(,"unitsPerEm")
@@ -66,4 +66,4 @@ attr(,"unitsPerEm")
 > 
 > proc.time()
    user  system elapsed 
-  1.593   0.150   1.737 
+  1.555   0.208   1.756 

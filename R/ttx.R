@@ -15,8 +15,8 @@ ttxAvailable <- function() {
     !is.null(ttxVersion())
 }
 
-ttx <- function(options, intern=FALSE, quiet=getOption("ttx.quiet")) {
-    if (quiet) {
+ttx <- function(options, intern=FALSE) {
+    if (getOption("ttx.quiet")) {
         options <- paste0(" -q ", options)
     }
     if (ttxAvailable()) {
@@ -57,10 +57,16 @@ getTTX <- function(ttxFile) {
 ################################################################################
 ## Generate RDS files (from TTX files)
 
+msg <- function(...) {
+    if (!getOption("ttx.quiet")) {
+        message(...)
+    }
+}
+
 ## Vector of glyph indices with names = glyph names
 ## (track nGlyph to allow for gaps in glyph indices)
 generateGlyphOrder <- function(ttx, rdsFile) {
-    message(paste0("Generating ", rdsFile, " ..."))
+    msg(paste0("Generating ", rdsFile, " ..."))
     glyphs <- xml_find_all(ttx, "//GlyphID")
     name <- xml_attr(glyphs, "name")
     id <- as.numeric(xml_attr(glyphs, "id"))
@@ -73,7 +79,7 @@ generateGlyphOrder <- function(ttx, rdsFile) {
 
 ## Matrix of width and left side bearing *in glyph index order*
 generateHMTX <- function(ttx, fontfile, suffix, rdsFile) {
-    message(paste0("Generating ", rdsFile, " ..."))
+    msg(paste0("Generating ", rdsFile, " ..."))
     glyphOrder <- getGlyphOrderTable(fontfile, suffix)
     nGlyph <- attr(glyphOrder, "nGlyph")
     metrics <- xml_find_all(ttx, "//mtx")
@@ -90,7 +96,7 @@ generateHMTX <- function(ttx, fontfile, suffix, rdsFile) {
 
 ## Matrix of height and top side bearing *in glyph index order*
 generateVMTX <- function(ttx, fontfile, suffix, rdsFile) {
-    message(paste0("Generating ", rdsFile, " ..."))
+    msg(paste0("Generating ", rdsFile, " ..."))
     glyphOrder <- getGlyphOrderTable(fontfile, suffix)
     nGlyph <- attr(glyphOrder, "nGlyph")
     metrics <- xml_find_all(ttx, "//mtx")
@@ -105,7 +111,7 @@ generateVMTX <- function(ttx, fontfile, suffix, rdsFile) {
 
 ## Matrix of xmin, xmax, ymin, ymax *in glyph index order*
 generateGLYF <- function(ttx, fontfile, suffix, rdsFile) {
-    message(paste0("Generating ", rdsFile, " ..."))
+    msg(paste0("Generating ", rdsFile, " ..."))
     metrics <- xml_find_all(ttx, "//TTGlyph")
     name <- xml_attr(metrics, "name")
     if (grepl("-FROM-OTF", fontfile)) {
@@ -163,18 +169,18 @@ getRDS <- function(rdsFile) {
 ## or a temporary one will be created per R session.
 ttxFontDir <- function() {
     fontDir <- getOption("ttx.cacheDir")
-    if (is.null(fontDir)) {
-        ## Use temporary dir (just for this R session)
-        fontDir <- file.path(tempdir(), "TTXfonts")
-        if (!dir.exists(fontDir)) {
-            dir.create(fontDir)
+    if (!is.null(fontDir)) {
+        if (dir.exists(fontDir)) {
+            return(fontDir)
+        } else {
+            warning(paste0("Font cache directory ", fontDir,
+                           " does not exist; ",
+                           "using temporary directory instead."))
         }
-    } else {
-        ## If user has specified a directory, user has to have
-        ## created that directory
-        if (!dir.exists(fontDir)) {
-            stop(paset0("Font cache directory ", fontDir, " does not exist."))
-        }
+    }
+    fontDir <- file.path(tempdir(), "TTXfonts")
+    if (!dir.exists(fontDir)) {
+        dir.create(fontDir)
     }
     fontDir
 }
@@ -224,7 +230,7 @@ getTable <- function(table, fontfile, suffix, replace=table) {
                 }
             }
         } 
-        message(paste0("Generating ", ttxfile, " ..."))
+        msg(paste0("Generating ", ttxfile, " ..."))
         ## -i for speed and size
         ttx(paste0("-i -t ", table, " -o ", ttxfile, " ", fontfile))
     }

@@ -19,7 +19,9 @@ fontForgeAvailable <- function() {
 }
 
 otf2ttf <- function(otfFile, ttfFile) {
-    message(paste0("Converting ", otfFile, " to ", ttfFile))
+    msg(paste0("Converting ", otfFile, " to ", ttfFile))
     system(paste0("fontforge -lang=ff -c 'Open($1); Reencode(\"original\"); Generate($2); Close();' ",
-                  otfFile, " ", ttfFile))
+                  otfFile, " ", ttfFile),
+           ignore.stderr=TRUE,
+           ignore.stdout=getOption("ttx.quiet"))
 }

@@ -186,16 +186,16 @@ ttxFontDir <- function() {
 }
 
 ttxFontFile <- function(fontpath) {
-    tmpFontDir <- ttxFontDir()
+    fontDir <- ttxFontDir()
     filename <- basename(fontpath)
     fontsuffix <- "[.](ttf|otf)$"
     if (!grepl(fontsuffix, filename))
         warning("Unrecognised font suffix")
     filesuffix <- gsub(paste0(".+", fontsuffix), "\\1", filename)
     filestub <- gsub(fontsuffix, "", filename)
-    fontfile <- file.path(tmpFontDir, filename)
+    fontfile <- file.path(fontDir, filename)
     if (!file.exists(fontfile)) {
-        file.copy(fontpath, tmpFontDir)
+        file.copy(fontpath, fontDir)
     }
     list(file=fontfile, suffix=filesuffix)
 }

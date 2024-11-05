@@ -203,7 +203,7 @@ ttxFontFile <- function(fontpath) {
 ################################################################################
 ## List all tables
 tableList <- function(fontfile) {
-    listing <- ttx(paste0("-l ", fontfile), intern=TRUE) 
+    listing <- ttx(paste0("-l ", shQuote(fontfile)), intern=TRUE) 
     gsub(" .+", "",
          gsub("^ +", "",
               listing[-c(1:3, length(listing))]))
@@ -232,7 +232,8 @@ getTable <- function(table, fontfile, suffix, replace=table) {
         } 
         msg(paste0("Generating ", ttxfile, " ..."))
         ## -i for speed and size
-        ttx(paste0("-i -t ", table, " -o ", ttxfile, " ", fontfile))
+        ttx(paste0("-i -t ", table, " -o ", shQuote(ttxfile),
+                   " ", shQuote(fontfile)))
     }
     if (table %in% c("GlyphOrder", "hmtx", "vmtx", "glyf")) {
         rdsFile <- gsub(paste0("[.]", suffix, "$"),

@@ -1,0 +1,1 @@
+Open($1); Reencode("original"); Generate($2); Close()

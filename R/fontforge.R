@@ -25,9 +25,10 @@ otf2ttf <- function(otfFile, ttfFile) {
         Sys.setenv("FONTFORGE_VERBOSE"="true")
     }
     system(paste0("fontforge ",
-                  "-c 'Open($1); Reencode(\"original\"); Generate($2); Close();' ",
                   "-lang=ff ",
-                  shQuote(otfFile), " ", shQuote(ttfFile)),
+                  "-script ",
+                  system.file("script", "otf2ttf", package="ttx"),
+                  " ", shQuote(otfFile), " ", shQuote(ttfFile)),
            ignore.stderr=quiet, ignore.stdout=quiet)
     if (!quiet) {
         Sys.unsetenv("FONTFORGE_VERBOSE")

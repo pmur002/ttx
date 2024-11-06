@@ -20,8 +20,16 @@ fontForgeAvailable <- function() {
 
 otf2ttf <- function(otfFile, ttfFile) {
     msg(paste0("Converting ", otfFile, " to ", ttfFile))
-    system(paste0("fontforge -lang=ff -c 'Open($1); Reencode(\"original\"); Generate($2); Close();' ",
+    quiet <- getOption("ttx.quiet")
+    if (!quiet) {
+        Sys.setenv("FONTFORGE_VERBOSE"="true")
+    }
+    system(paste0("fontforge ",
+                  "-c 'Open($1); Reencode(\"original\"); Generate($2); Close();' ",
+                  "-lang=ff ",
                   shQuote(otfFile), " ", shQuote(ttfFile)),
-           ignore.stderr=getOption("ttx.quiet"),
-           ignore.stdout=getOption("ttx.quiet"))
+           ignore.stderr=quiet, ignore.stdout=quiet)
+    if (!quiet) {
+        Sys.unsetenv("FONTFORGE_VERBOSE")
+    }
 }

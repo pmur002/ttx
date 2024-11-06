@@ -22,6 +22,6 @@ otf2ttf <- function(otfFile, ttfFile) {
     msg(paste0("Converting ", otfFile, " to ", ttfFile))
     system(paste0("fontforge -lang=ff -c 'Open($1); Reencode(\"original\"); Generate($2); Close();' ",
                   shQuote(otfFile), " ", shQuote(ttfFile)),
-           ignore.stderr=TRUE,
+           ignore.stderr=getOption("ttx.quiet"),
            ignore.stdout=getOption("ttx.quiet"))
 }

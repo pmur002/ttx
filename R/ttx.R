@@ -136,7 +136,7 @@ generateGLYF <- function(ttx, fontfile, suffix, rdsFile) {
     ymin[glyphOrder[name] + 1] <- as.numeric(xml_attr(metrics, "yMin"))
     ymax <- numeric(nGlyph)
     ymax[glyphOrder[name] + 1] <- as.numeric(xml_attr(metrics, "yMax"))
-    glyf <- cbind(xmin, xmax, ymin, ymax)
+    glyf <- cbind(xmin, ymin, xmax, ymax)
     saveRDS(glyf, rdsFile)
 }
 
